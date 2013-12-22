@@ -122,19 +122,39 @@ ELSE()
             ${ARGN}
         )
 
-        IF(NOT _rad_init_verbose)
-            SET(_rad_init_verbose FALSE)
-        ENDIF()
-        SET(RAD_CORE_VERBOSE ${_rad_init_VERBOSE} CACHE BOOL "RAD should be verbose")
-        IF(${RAD_CORE_VERBOSE})
-            MESSAGE(STATUS "RAD-Tools (C) 2013 Cunz RAD Ltd.")
-            MESSAGE(STATUS "RAD-Tools version is ${RAD_CORE_VERSION}")
-        ENDIF()
-        _RAD_FIND_DIRS(${CMAKE_SOURCE_DIR})
+        IF(${RAD_CORE_IS_INITIALIZED})
+            # If we are already initialized, just look for additional features
+            # and load them (We need to filter out loaded features here, since
+            # we don't want to have "Already loaded" messages for them).
+            FOREACH(_feature ${_rad_init_FEATURES})
+                RAD_IS_FEATURE_LOADED(${_feature} _is_loaded)
+                IF(NOT ${_is_loaded})
+                    RAD_LOAD_FEATURE(${_feature})
+                ENDIF()
+            ENDFOREACH()
 
-        FOREACH(_feature ${_rad_init_FEATURES})
-            RAD_LOAD_FEATURE(${_feature})
-        ENDFOREACH()
+        ELSE()
+            # We're really initializing for the first time in this CMake run...
+
+            IF(NOT _rad_init_verbose)
+                SET(_rad_init_verbose FALSE)
+            ENDIF()
+            SET(RAD_CORE_VERBOSE ${_rad_init_VERBOSE}
+                CACHE BOOL "RAD should be verbose")
+
+            IF(${RAD_CORE_VERBOSE})
+                MESSAGE(STATUS "RAD-Tools (C) 2013 Cunz RAD Ltd.")
+                MESSAGE(STATUS "RAD-Tools version is ${RAD_CORE_VERSION}")
+            ENDIF()
+            _RAD_FIND_DIRS(${CMAKE_SOURCE_DIR})
+
+            FOREACH(_feature ${_rad_init_FEATURES})
+                RAD_LOAD_FEATURE(${_feature})
+            ENDFOREACH()
+
+            # Set this at the end to allow features to load other features...
+            SET(RAD_CORE_IS_INITIALIZED TRUE)
+        ENDIF()
 
     ENDMACRO()
 
