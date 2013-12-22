@@ -97,4 +97,13 @@ ELSE()
 
     ENDMACRO()
 
+    MACRO(RAD_CORE_ADD_FLAG _var _flag)
+        IF(NOT DEFINED ${_var})
+            SET(${_var} "${_flag}" CACHE STRING "..." FORCE )
+        ENDIF()
+
+        IF(NOT "${${_var}}" MATCHES ".*${_flag}.*")
+            SET(${_var} "${${_var}} ${_flag}" CACHE STRING "..." FORCE )
+        ENDIF()
+    ENDMACRO()
 ENDIF()
