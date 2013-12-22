@@ -1,0 +1,7 @@
+
+IF(UNIX)
+    RAD_CORE_ADD_FLAG(CMAKE_CXX_FLAGS "-fvisibility=hidden")
+    RAD_CORE_ADD_FLAG(CMAKE_CXX_FLAGS "-fvisibility-inlines-hidden")
+    RAD_CORE_ADD_FLAG(CMAKE_C_FLAGS "-fvisibility=hidden")
+    RAD_CORE_ADD_FLAG(CMAKE_C_FLAGS "-fvisibility-inlines-hidden")
+ENDIF()
