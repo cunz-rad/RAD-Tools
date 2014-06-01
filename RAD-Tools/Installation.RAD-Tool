@@ -1,0 +1,128 @@
+
+MACRO(_rad_tool_installation_init)
+
+    IF(WIN32 AND NOT CYGWIN)
+        SET(_DEF_INSTALL_CMAKE_DIR CMake)
+    ELSE()
+        SET(_DEF_INSTALL_CMAKE_DIR lib/CMake)
+    ENDIF()
+
+    SET(RAD_INSTALL_LIB_DIR     lib                       CACHE PATH "Installation directory for libraries")
+    SET(RAD_INSTALL_BIN_DIR     bin                       CACHE PATH "Installation directory for executables")
+    SET(RAD_INSTALL_INCLUDE_DIR include                   CACHE PATH "Installation directory for header files")
+    SET(RAD_INSTALL_CMAKE_DIR   ${_DEF_INSTALL_CMAKE_DIR} CACHE PATH "Installation directory for CMake files")
+
+    FOREACH(p LIB BIN INCLUDE CMAKE)
+        SET(var RAD_INSTALL_${p}_DIR)
+        IF(NOT IS_ABSOLUTE "${${var}}")
+            SET(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+        ENDIF()
+    ENDFOREACH()
+
+ENDMACRO()
+
+FUNCTION(RAD_INSTALL_LIBRARY PACKAGE TARGET)
+    INSTALL(
+        TARGETS
+            ${TARGET}
+        EXPORT
+            ${PACKAGE}Targets
+        RUNTIME
+            DESTINATION
+                ${RAD_INSTALL_BIN_DIR}
+        LIBRARY
+            DESTINATION
+                ${RAD_INSTALL_LIB_DIR}
+    )
+ENDFUNCTION()
+
+FUNCTION(RAD_INSTALL_HEADERS BASESUBDIR)
+    FOREACH(HEADER ${ARGN})
+        GET_FILENAME_COMPONENT(HEADER_DIR ${HEADER} PATH)
+
+        INSTALL(
+            FILES           ${HEADER}
+            DESTINATION     "${RAD_INSTALL_INCLUDE_DIR}/${BASESUBDIR}/${HEADER_DIR}"
+            COMPONENT       DevelopmentFiles
+        )
+    ENDFOREACH()
+ENDFUNCTION()
+
+FUNCTION(RAD_CREATE_PACKAGE NAME)
+    STRING(TOUPPER ${NAME} NAME_UC)
+
+    CMAKE_PARSE_ARGUMENTS(
+        ARGS
+        ""
+        "TEMPLATE_DIR"
+        "TARGETS"
+        ${ARGN}
+    )
+
+    SET(TARGETS "")
+    FOREACH(TARGET ${ARGS_TARGETS})
+        SET(TARGETS ${TARGETS} ${TARGET})
+    ENDFOREACH()
+
+    EXPORT(
+        TARGETS
+            ${TARGETS}
+        FILE
+            "${CMAKE_CURRENT_BINARY_DIR}/${NAME}Targets.cmake"
+    )
+
+    EXPORT(PACKAGE ${NAME})
+
+    FILE(
+        RELATIVE_PATH
+            REL_INC_DIR
+            "${RAD_INSTALL_CMAKE_DIR}/${NAME}"
+            "${RAD_INSTALL_INCLUDE_DIR}"
+    )
+
+    # BUILD-TREE config
+    SET(CONFIG_INC_DIRS ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    CONFIGURE_FILE(
+        ${CMAKE_CURRENT_SOURCE_DIR}/${ARGS_TEMPLATE_DIR}/${NAME}Config.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/${NAME}Config.cmake"
+        @ONLY
+    )
+
+    # INSTALL-TREE config
+    SET(CONFIG_INC_DIRS "\${${NAME_UC}_CMAKE_DIR}/${REL_INC_DIR}")
+    CONFIGURE_FILE(
+        ${CMAKE_CURRENT_SOURCE_DIR}/${ARGS_TEMPLATE_DIR}/${NAME}Config.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NAME}Config.cmake"
+        @ONLY
+    )
+
+    # VERSION info
+    SET(CONFIG_VERSION ${${NAME_UC}_VERSION})
+    CONFIGURE_FILE(
+        ${CMAKE_CURRENT_SOURCE_DIR}/${ARGS_TEMPLATE_DIR}/${NAME}ConfigVersion.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/${NAME}ConfigVersion.cmake"
+        @ONLY
+    )
+
+    INSTALL(
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${NAME}Config.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/${NAME}ConfigVersion.cmake"
+        DESTINATION
+            "${RAD_INSTALL_CMAKE_DIR}/${NAME}"
+        COMPONENT
+            DevelopmentFiles
+    )
+
+    INSTALL(
+        EXPORT
+            ${NAME}Targets
+        DESTINATION
+            "${RAD_INSTALL_CMAKE_DIR}/${NAME}"
+        COMPONENT
+            DevelopmentFiles
+    )
+
+ENDFUNCTION()
+
+_rad_tool_installation_init()

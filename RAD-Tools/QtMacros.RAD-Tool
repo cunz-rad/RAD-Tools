@@ -1,7 +1,9 @@
 
 FIND_PROGRAM(
     QMAKE_EXE   qmake
-    PATHS       ${QTDIR}
+    PATHS       ${QTDIR}/bin
+                $ENV{QTDIR}/bin
+                ${QTDIR}
                 $ENV{QTDIR}
                 /usr/bin
                 /usr/local/bin

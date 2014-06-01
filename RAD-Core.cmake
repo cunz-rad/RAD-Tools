@@ -1,5 +1,5 @@
 
-SET(_rad_this_version "1")
+SET(_rad_this_version "2")
 IF(RAD_CORE_INCLUDED)
     IF(NOT ${RAD_CORE_VERSION} VERSION_EQUAL ${_rad_this_version})
         MESSAGE(FATAL_ERROR "Cannot mix different versions of RAD-Core/Tools!")
@@ -143,7 +143,7 @@ ELSE()
                 CACHE BOOL "RAD should be verbose")
 
             IF(${RAD_CORE_VERBOSE})
-                MESSAGE(STATUS "RAD-Tools (C) 2013 Cunz RAD Ltd.")
+                MESSAGE(STATUS "RAD-Tools (C) 2013-2014 Cunz RAD Ltd.")
                 MESSAGE(STATUS "RAD-Tools version is ${RAD_CORE_VERSION}")
             ENDIF()
             _RAD_FIND_DIRS(${CMAKE_SOURCE_DIR})
@@ -167,4 +167,22 @@ ELSE()
             SET(${_var} "${${_var}} ${_flag}" CACHE STRING "..." FORCE )
         ENDIF()
     ENDMACRO()
+
+    FUNCTION(RAD_DEFINE_VERSION NAME MAJ MIN PAT)
+        SET(${NAME}_MAJOR_VERSION ${MAJ} PARENT_SCOPE)
+        SET(${NAME}_MINOR_VERSION ${MIN} PARENT_SCOPE)
+        SET(${NAME}_PATCH_VERSION ${PAT} PARENT_SCOPE)
+        SET(${NAME}_VERSION ${MAJ}.${MIN}.${PAT} PARENT_SCOPE)
+    ENDFUNCTION()
+
+    FUNCTION(RAD_SET_TARGET_VERSION TARGET VER_NAME)
+        SET_TARGET_PROPERTIES(
+            ${TARGET}
+            PROPERTIES
+                VERSION     ${${VER_NAME}_VERSION}
+                SOVERSION   ${${VER_NAME}_MAJOR_VERSION}.${${VER_NAME}_MINOR_VERSION}
+        )
+    ENDFUNCTION()
+
+
 ENDIF()
