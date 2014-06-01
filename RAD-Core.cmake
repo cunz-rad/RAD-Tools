@@ -11,8 +11,15 @@ ELSE()
     INCLUDE(CMakeParseArguments)
 
     MACRO(RAD_ADD_MODULE_DIR dir)
-        LIST(APPEND RAD_CORE_MODULE_DIRS ${dir})
-        SET(RAD_CORE_MODULE_DIRS ${RAD_CORE_MODULE_DIRS}
+        LIST(APPEND
+            RAD_CORE_MODULE_DIRS
+            ${dir}
+        )
+        LIST(REMOVE_DUPLICATES
+            RAD_CORE_MODULE_DIRS
+        )
+        SET(RAD_CORE_MODULE_DIRS
+            ${RAD_CORE_MODULE_DIRS}
             CACHE STRING "RAD Module directories" FORCE)
     ENDMACRO()
 
@@ -28,7 +35,8 @@ ELSE()
                     IF(${RAD_CORE_VERBOSE})
                         MESSAGE(STATUS "Found RAD-Tools directory in ${dir}")
                     ENDIF()
-                    RAD_ADD_MODULE_DIR(${dir})
+                    GET_FILENAME_COMPONENT(fullpath ${basename} ABSOLUTE)
+                    RAD_ADD_MODULE_DIR(${fullpath})
                 ELSE()
                     LIST(APPEND subdirs ${dir})
                 ENDIF()
