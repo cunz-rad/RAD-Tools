@@ -81,7 +81,7 @@ ELSE()
             SET(_rad_found FALSE)
             FOREACH(_rad_dir ${RAD_CORE_MODULE_DIRS})
                 IF(NOT _rad_found)
-                    SET(_file ${CMAKE_SOURCE_DIR}/${_rad_dir}/${_feature}.RAD-Tool)
+                    SET(_file ${_rad_dir}/${_feature}.RAD-Tool)
                     IF(EXISTS ${_file})
 
                         SET(_user_info "RAD-Feature ${_feature}")
