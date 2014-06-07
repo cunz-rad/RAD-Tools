@@ -1,5 +1,5 @@
 
-SET(_rad_this_version "3")
+SET(_rad_this_version "4")
 IF(RAD_CORE_INCLUDED)
     IF(NOT ${RAD_CORE_VERSION} VERSION_EQUAL ${_rad_this_version})
         MESSAGE(FATAL_ERROR "Cannot mix different versions of RAD-Core/Tools!")
