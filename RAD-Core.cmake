@@ -100,7 +100,7 @@ ELSE()
                             MESSAGE(STATUS "Loading ${_user_info}")
                         ENDIF()
 
-                        SET(RAD_CURRENT_TOOL_DIR ${CMAKE_SOURCE_DIR}/${_rad_dir})
+                        GET_FILENAME_COMPONENT(RAD_CURRENT_TOOL_DIR ${_file} PATH)
                         SET(RAD_CURRENT_TOOL_SILENT ${_silent})
                         INCLUDE(${_file})
                         UNSET(RAD_CURRENT_TOOL_DIR)
