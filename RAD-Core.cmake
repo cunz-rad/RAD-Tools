@@ -1,5 +1,5 @@
 
-SET(_rad_this_version "2")
+SET(_rad_this_version "3")
 IF(RAD_CORE_INCLUDED)
     IF(NOT ${RAD_CORE_VERSION} VERSION_EQUAL ${_rad_this_version})
         MESSAGE(FATAL_ERROR "Cannot mix different versions of RAD-Core/Tools!")
@@ -11,8 +11,15 @@ ELSE()
     INCLUDE(CMakeParseArguments)
 
     MACRO(RAD_ADD_MODULE_DIR dir)
-        LIST(APPEND RAD_CORE_MODULE_DIRS ${dir})
-        SET(RAD_CORE_MODULE_DIRS ${RAD_CORE_MODULE_DIRS}
+        LIST(APPEND
+            RAD_CORE_MODULE_DIRS
+            ${dir}
+        )
+        LIST(REMOVE_DUPLICATES
+            RAD_CORE_MODULE_DIRS
+        )
+        SET(RAD_CORE_MODULE_DIRS
+            ${RAD_CORE_MODULE_DIRS}
             CACHE STRING "RAD Module directories" FORCE)
     ENDMACRO()
 
@@ -28,7 +35,8 @@ ELSE()
                     IF(${RAD_CORE_VERBOSE})
                         MESSAGE(STATUS "Found RAD-Tools directory in ${dir}")
                     ENDIF()
-                    RAD_ADD_MODULE_DIR(${dir})
+                    GET_FILENAME_COMPONENT(fullpath ${basename} ABSOLUTE)
+                    RAD_ADD_MODULE_DIR(${fullpath})
                 ELSE()
                     LIST(APPEND subdirs ${dir})
                 ENDIF()
@@ -73,7 +81,7 @@ ELSE()
             SET(_rad_found FALSE)
             FOREACH(_rad_dir ${RAD_CORE_MODULE_DIRS})
                 IF(NOT _rad_found)
-                    SET(_file ${CMAKE_SOURCE_DIR}/${_rad_dir}/${_feature}.RAD-Tool)
+                    SET(_file ${_rad_dir}/${_feature}.RAD-Tool)
                     IF(EXISTS ${_file})
 
                         SET(_user_info "RAD-Feature ${_feature}")
