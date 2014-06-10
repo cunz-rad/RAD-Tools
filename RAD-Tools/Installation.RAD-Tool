@@ -4,7 +4,7 @@ MACRO(_rad_tool_installation_init)
     IF(WIN32 AND NOT CYGWIN)
         SET(_DEF_INSTALL_CMAKE_DIR CMake)
     ELSE()
-        SET(_DEF_INSTALL_CMAKE_DIR lib/CMake)
+        SET(_DEF_INSTALL_CMAKE_DIR lib/cmake)
     ENDIF()
 
     SET(RAD_INSTALL_LIB_DIR     lib                       CACHE PATH "Installation directory for libraries")
