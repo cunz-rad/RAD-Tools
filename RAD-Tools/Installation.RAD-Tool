@@ -27,9 +27,15 @@ FUNCTION(RAD_INSTALL_LIBRARY PACKAGE TARGET)
             ${TARGET}
         EXPORT
             ${PACKAGE}Targets
+
         RUNTIME
             DESTINATION
                 ${RAD_INSTALL_BIN_DIR}
+
+        ARCHIVE
+            DESTINATION
+                ${RAD_INSTALL_LIB_DIR}
+
         LIBRARY
             DESTINATION
                 ${RAD_INSTALL_LIB_DIR}
