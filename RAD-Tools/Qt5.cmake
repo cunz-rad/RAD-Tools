@@ -16,7 +16,8 @@ MACRO(__SEARCH_MODS _mods)
 ENDMACRO()
 
 # Find modules from essential modules directly here
-__SEARCH_MODS(Core Gui Widgets Xml Network)
+SET(__essentials Core Gui Widgets Xml Network)
+__SEARCH_MODS(${__essentials})
 
 MACRO(QT_MOC SourcesVar )
 
