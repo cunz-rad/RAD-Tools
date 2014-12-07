@@ -9,11 +9,13 @@ EXECUTE_PROCESS(
 
 SET( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_INSTALL_PREFIX} )
 
-SET( _mods Core Gui Widgets Xml Network WebKit WebKitWidgets)
+#SET( _mods Core Gui Widgets Xml Network WebKit WebKitWidgets)
 
-FOREACH( _mod ${_mods} )
-    FIND_PACKAGE(Qt5${_mod})
-ENDFOREACH()
+MACRO(__SEARCH_MODS _mods)
+    FOREACH( _mod ${_mods} )
+        FIND_PACKAGE(Qt5${_mod})
+    ENDFOREACH()
+ENDMACRO()
 
 MACRO(QT_MOC SourcesVar )
 
@@ -129,6 +131,7 @@ MACRO( QT_PREPARE )
             LIST( APPEND QT_USED_MODULES ${mod} )
         ENDIF()
     ENDFOREACH()
+    __SEARCH_MODS(${QT_USED_MODULES})
 ENDMACRO()
 
 MACRO(ADVANCE_TO_QT_PROJECT _target)
