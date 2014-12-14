@@ -56,6 +56,9 @@ FUNCTION(RAD_INSTALL_EXECUTABLE PACKAGE TARGET)
         RUNTIME
             DESTINATION
                 ${RAD_INSTALL_BIN_DIR}
+        BUNDLE
+            DESTINATION
+                ${RAD_INSTALL_BIN_DIR}
         LIBRARY
             DESTINATION
                 ${RAD_INSTALL_LIB_DIR}
