@@ -50,7 +50,17 @@ MACRO(QT_MOC SourcesVar )
                 STRING(REGEX MATCHALL "Q_OBJECT" _match "${_contents}")
                 IF(_match)
                     GET_FILENAME_COMPONENT(_basename ${_current_FILE} NAME_WE)
-                    SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/moc_${_basename}.cpp)
+                    GET_FILENAME_COMPONENT(_dir ${_abs_FILE} DIRECTORY)
+
+                    FILE(RELATIVE_PATH REL_PATH ${CMAKE_CURRENT_SOURCE_DIR} ${_dir})
+                    IF(NOT "${REL_PATH}X" STREQUAL "X")
+                        STRING(REPLACE "/" "_" _prefix "${REL_PATH}/")
+                    ELSE()
+                        SET(_prefix "")
+                    ENDIF()
+
+                    SET(_moc ${CMAKE_CURRENT_BINARY_DIR}/moc_${_prefix}${_basename}.cpp)
+
                     QT5_GENERATE_MOC(${_abs_FILE} ${_moc})
 
                     LIST( APPEND _mocfiles ${_moc} )
